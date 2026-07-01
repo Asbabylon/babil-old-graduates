@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>قائمة الخريجين</title>
+</head>
+<body>
+  <h2>قائمة الخريجين</h2>
+  <table border="1" id="graduatesTable">
+    <thead>
+      <tr>
+        <th>الاسم</th>
+        <th>المواليد</th>
+        <th>القضاء</th>
+        <th>المحافظة</th>
+        <th>الحالة الاجتماعية</th>
+        <th>التحصيل الدراسي</th>
+        <th>الاختصاص</th>
+        <th>سنة التخرج</th>
+        <th>الهاتف</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "babil-old-graduates.firebaseapp.com",
+      projectId: "babil-old-graduates",
+      storageBucket: "babil-old-graduates.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadGraduates() {
+      const querySnapshot = await getDocs(collection(db, "graduates"));
+      const tableBody = document.querySelector("#graduatesTable tbody");
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const row = `
+          <tr>
+            <td>${data.fullname}</td>
+            <td>${data.birth.day}/${data.birth.month}/${data.birth.year}</td>
+            <td>${data.district}</td>
+            <td>${data.province}</td>
+            <td>${data.status}</td>
+            <td>${data.study}</td>
+            <td>${data.major}</td>
+            <td>${data.gradYear}</td>
+            <td>${data.phone}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    loadGraduates();
+  </script>
+</body>
+</html>
+const urlParams = new URLSearchParams(window.location.search);
+const phone = urlParams.get("phone");
+const docRef = doc(db, "graduates", phone);
+const docSnap = await getDoc(docRef);
+

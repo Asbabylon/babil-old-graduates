@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>استمارة خريجي بابل</title>
+</head>
+<body>
+  <h2>استمارة قاعدة البيانات</h2>
+  <form id="graduateForm">
+    <label>الاسم الثلاثي واللقب:</label>
+    <input type="text" id="fullname" required><br><br>
+
+    <label>المواليد:</label>
+    يوم <input type="number" id="day" required>
+    شهر <input type="number" id="month" required>
+    سنة <input type="number" id="year" required><br><br>
+
+    <label>المحافظة:</label>
+    <input type="text" id="province" required>
+    <label>القضاء:</label>
+    <input type="text" id="district" required><br><br>
+
+    <label>الحالة الاجتماعية:</label>
+    <select id="status" required>
+      <option>أعزب</option>
+      <option>متزوج</option>
+    </select><br><br>
+
+    <label>التحصيل الدراسي:</label>
+    <input type="radio" name="study" value="جامعة" required> جامعة
+    <input type="radio" name="study" value="معهد"> معهد<br><br>
+
+    <label>الاختصاص:</label>
+    <input type="text" id="major" required><br><br>
+
+    <label>سنة التخرج:</label>
+    <input type="number" id="gradYear" required><br><br>
+
+    <label>رقم الهاتف:</label>
+    <input type="tel" id="phone" required><br><br>
+
+    <p>أتعهد بأن جميع المعلومات صحيحة</p>
+    <label>التوقيع:</label>
+    <input type="text" id="signature"><br><br>
+
+    <label>التاريخ:</label>
+    <input type="date" id="date"><br><br>
+
+    <button type="submit">إرسال</button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "babil-old-graduates.firebaseapp.com",
+      projectId: "babil-old-graduates",
+      storageBucket: "babil-old-graduates.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("graduateForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        fullname: document.getElementById("fullname").value,
+        birth: {
+          day: document.getElementById("day").value,
+          month: document.getElementById("month").value,
+          year: document.getElementById("year").value
+        },
+        province: document.getElementById("province").value,
+        district: document.getElementById("district").value,
+        status: document.getElementById("status").value,
+        study: document.querySelector('input[name="study"]:checked').value,
+        major: document.getElementById("major").value,
+        gradYear: document.getElementById("gradYear").value,
+        phone: document.getElementById("phone").value,
+        signature: document.getElementById("signature").value,
+        date: document.getElementById("date").value
+      };
+
+      try {
+      await setDoc(doc(db, "graduates", document.getElementById("phone").value), {
+  fullname: document.getElementById("fullname").value,
+  birth: {
+    day: document.getElementById("day").value,
+    month: document.getElementById("month").value,
+    year: document.getElementById("year").value
+  },
+  province: document.getElementById("province").value,
+  district: document.getElementById("district").value,
+  status: document.getElementById("status").value,
+  study: document.getElementById("study").value,
+  major: document.getElementById("major").value,
+  gradYear: document.getElementById("gradYear").value,
+  phone: document.getElementById("phone").value
+});
+
+        alert("✅ تم حفظ البيانات بنجاح");
+        form.reset();
+      } catch (error) {
+        console.error("❌ خطأ في الحفظ:", error);
+        alert("حدث خطأ أثناء الإرسال");
+      }
+    });
+  </script>
+</body>
+</html>
+<a href="view.html">
+  <button type="button">عرض قائمة الخريجين</button>
+</a>
+window.location.href = "view.html?phone=" + phone;
